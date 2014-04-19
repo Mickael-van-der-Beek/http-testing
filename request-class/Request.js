@@ -1,18 +1,18 @@
 var net = require('net');
-var statusCodes = require('../http-standards/rfc2616');
+var statusCodes = require('../http-standards/rfc2616').statuses;
 
 var HTTPParser = process.binding('http_parser').HTTPParser;
 
 var port = 3000;
 var host = '127.0.0.1';
 
-function handleResponse (buffer, callback) {
+function handleResponse (buffer, expectedStatusCodes, callback) {
 	return callback(null);
 	var parser = new HTTPParser(HTTPParser.RESPONSE);
 
 	parser.onHeadersComplete = function (res) {
 		var status = res.statusCode;
-		if((status | 0) !== statusCode) {
+		if(!~expectedStatusCodes.indexOf(status | 0)) {
 			return callback('non-standard', 'Wrong status code.');
 		}
 
@@ -27,7 +27,7 @@ function handleResponse (buffer, callback) {
 	parser.execute(buffer, 0, buffer.length);
 }
 
-function Request (request, statusCode, callback) {
+function Request (request, expectedStatusCodes, callback) {
 
 	var called = false;
 	var cb = function () {
@@ -53,10 +53,10 @@ function Request (request, statusCode, callback) {
 		buffer = Buffer.concat([buffer, data]);
 	})
 	.on('close', function () {
-		handleResponse(buffer, cb);
+		handleResponse(buffer, expectedStatusCodes, cb);
 	})
 	.on('end', function () {
-		handleResponse(buffer, cb);
+		handleResponse(buffer, expectedStatusCodes, cb);
 	});
 
 	client.write(request);
