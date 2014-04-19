@@ -1,6 +1,6 @@
 {
 	"name": "http-testing",
-	"description": "Testing of HTTP servers for both security and implementation reasons.",
+	"description": "Testing of HTTP servers for security and respect of the standard in the implementation.",
 	"version": "0.0.1",
 	"private": true,
 	"author": "Mickael van der Beek (https://github.com/Mickael-van-der-Beek)",
